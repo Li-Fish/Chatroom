@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test</title>
+</head>
+<body>
+<textarea id="id-username" style="width: 200px;height: 30px">请输入用户名</textarea>
+<br>
+<textarea id="id-content" style="width: 400px;height: 300px">
+</textarea>
+<br>
+<textarea id="id-input" style="width: 350px;height: 70px">
+</textarea>
+<button id="id-button">Submit</button>
+<button id="id-clear">clear</button>
+
+<script>
+    const log = console.log
+
+    input = document.querySelector('#id-input')
+    btn = document.querySelector('#id-button')
+    content = document.querySelector('#id-content')
+    clear = document.querySelector('#id-clear')
+    username = document.querySelector('#id-username')
+
+    const socket = new WebSocket('ws://127.0.0.1:50006')
+    socket.onopen = event => {
+        log('OK')
+    }
+
+    socket.onmessage = event => {
+        content.value += '\n' + event.data
+    }
+
+    btn.onclick = (event) => {
+        socket.send(username.value + ': ' + input.value)
+        input.value = ''
+    }
+
+    clear.onclick = (event) => {
+        content.value = ''
+    }
+
+    input.onkeydown = (event) => {
+        if (event.key === 'Enter') {
+            socket.send(username.value + ': ' + input.value)
+            input.value = ''
+        }
+    }
+</script>
+</body>
+</html>

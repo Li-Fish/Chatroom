@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .name {
+            text-align: center;
+            width: 100px;
+            border-radius: 10px;
+            background-color: cadetblue
+        }
+
+        .content {
+            word-break: break-all;
+            padding: 10px;
+            border-radius: 10px;
+            height: 20px;
+            width: 550px;
+            background-color: aquamarine;
+        }
+
+        .user {
+            background-color: cadetblue;
+        }
+
+        .username {
+            text-align: center;
+            width: 120px;
+            border: 1px solid whitesmoke
+        }
+
+    </style>
+</head>
+<body style="background-color: black; font-size: 20px">
+<div style=" padding: 10px; position: absolute; left: 10px; height: 700px; width: 150px; background-color: cadetblue">
+    <table>
+        <tbody id="userlist" class="userlist">
+        <tr class="user">
+            <td id="myname" class="username"></td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<div style="position: absolute; left: 160px;float:left; height: 700px; width: 800px; background-color: aliceblue">
+    <div id="talkbox" style="overflow: auto; padding: 10px;width: 780px; height: 500px; background-color: whitesmoke">
+        <table cellspacing="20px">
+            <tbody id="content">
+            </tbody>
+        </table>
+    </div>
+    <div style="background-color: gray; width: 800px; height: 5px"></div>
+    <textarea id="input" style="font-size: 20px; resize: none; padding: 10px;width: 778px; height: 140px;">
+
+    </textarea>
+    <div style="padding-left: 600px; width: 200px; background-color: white; height: 30px">
+        <button id="send" style="border-radius: 10px ;border-color: gray; background-color: whitesmoke ;width: 190px;">
+            Send
+        </button>
+    </div>
+</div>
+
+<script>
+    const colors = [
+        ['cadetblue', 'aquamarine'],
+        ['#0099FF', '#00CCFF'],
+        ['#FF33FF', '#FF66FF'],
+        ['#CC6666', '#CC9966'],
+        ['#666600', '#669900'],
+        ['#00CC33', '#00FF33'],
+        ['#CCCC00', 'CCFF00']]
+
+    const log = console.log
+
+    let input = document.querySelector('#input')
+    let btn = document.querySelector('#send')
+    let content = document.querySelector('#content')
+    let myname = document.querySelector('#myname')
+    let talkbox = document.querySelector('#talkbox')
+    let userlist = document.querySelector('#userlist')
+
+    const socket = new WebSocket('ws://39.107.230.199:50006')
+
+    const add_user = (n) => {
+        if (n === myname.innerHTML) return
+        let user = document.createElement("tr")
+        let name = document.createElement("td")
+
+        user.setAttribute('class', 'user')
+        user.setAttribute('id', 'id-' + n)
+        name.setAttribute('class', 'username')
+
+        name.innerHTML = n
+
+        user.appendChild(name)
+
+        userlist.append(user)
+    }
+
+    const del_use = (n) => {
+        let t = document.querySelector('#id-' + n)
+        t.remove()
+    }
+
+    const add_talk = (n, c) => {
+        let row = document.createElement("tr")
+        let name = document.createElement("td")
+        let con = document.createElement("td")
+
+        name.setAttribute('class', 'name')
+        name.innerHTML = n
+        name.style.backgroundColor = colors[n.charCodeAt(0) % 7][0]
+        con.setAttribute('class', 'content')
+        con.innerHTML = c
+        con.style.backgroundColor = colors[n.charCodeAt(0) % 7][1]
+
+        row.appendChild(name)
+        row.appendChild(con)
+        content.appendChild(row)
+        talkbox.scrollTop = talkbox.scrollHeight
+    }
+
+    const get_data = () => {
+        let o = {
+            "type": "message",
+            "username": myname.innerHTML,
+            "content": input.value,
+        }
+        return JSON.stringify(o)
+    }
+
+    const hello = (name) => {
+        let o = {
+            "type": "add_user",
+            "username": name
+        }
+        o = JSON.stringify(o)
+        socket.send(o)
+    }
+
+    socket.onopen = event => {
+        log('OK')
+        __main__()
+    }
+
+    socket.onmessage = event => {
+        let obj = JSON.parse(event.data)
+        if (obj.type === 'message') {
+            add_talk(obj.username, obj.content)
+        }
+        if (obj.type === 'add_user') {
+            add_user(obj.username)
+        }
+        if (obj.type === 'del_user') {
+            del_use(obj.username)
+        }
+    }
+
+    btn.onclick = (event) => {
+        socket.send(get_data())
+        input.value = ''
+    }
+
+    input.onkeydown = (event) => {
+        if (event.key === 'Enter') {
+            socket.send(get_data())
+            input.value = ''
+        }
+    }
+
+    function __main__() {
+        do {
+            myname.innerHTML = prompt('Enter Your Name')
+        } while(myname.innerHTML.length <= 0)
+        hello(myname.innerHTML)
+    }
+</script>
+
+</body>
+</html>
