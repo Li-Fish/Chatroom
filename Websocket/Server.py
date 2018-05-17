@@ -17,10 +17,13 @@ class server:
     def run(self):
         while True:
             conn, addr = self.s.accept()
-            c = websocket(conn, addr)
-            print('Connected by', addr[1])
-            self.users.append(c)
-            threading.Thread(target=self.process, args=((c,))).start()
+            try:
+                c = websocket(conn, addr)
+                print('Connected by', addr[1])
+                self.users.append(c)
+                threading.Thread(target=self.process, args=((c,))).start()
+            except Exception:
+                pass
 
     def send_to_all(self, data):
         for s in self.users:

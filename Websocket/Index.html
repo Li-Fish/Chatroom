@@ -31,6 +31,7 @@
         }
 
     </style>
+    <script src="http://code.jquery.com/jquery-latest.js"></script>
 </head>
 <body style="background-color: black; font-size: 20px">
 <div style=" padding: 10px; position: absolute; left: 10px; height: 700px; width: 150px; background-color: cadetblue">
@@ -118,6 +119,9 @@
         row.appendChild(con)
         content.appendChild(row)
         talkbox.scrollTop = talkbox.scrollHeight
+
+        $(row).animate({opacity: '0.5'}, 0)
+        $(row).animate({opacity: '1'}, 500)
     }
 
     const get_data = () => {
@@ -171,7 +175,7 @@
     function __main__() {
         do {
             myname.innerHTML = prompt('Enter Your Name')
-        } while(myname.innerHTML.length <= 0)
+        } while (myname.innerHTML.length <= 0)
         hello(myname.innerHTML)
     }
 </script>
