@@ -76,5 +76,14 @@ Sec-WebSocket-Accept: {}
     return rst
 
 
+def son_task(file_name, rpipe):
+    out = open(file_name, 'a')
+    f = open(rpipe)
+    while True:
+        data = f.readline()
+        print('Son OK' + data)
+        out.write(data)
+
+
 if __name__ == '__main__':
     pass

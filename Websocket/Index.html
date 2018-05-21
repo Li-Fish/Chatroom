@@ -80,7 +80,7 @@
     let talkbox = document.querySelector('#talkbox')
     let userlist = document.querySelector('#userlist')
 
-    const socket = new WebSocket('ws://39.107.230.199:50006')
+    const socket = new WebSocket('ws://127.0.0.1:50006')
 
     const add_user = (n) => {
         if (n === myname.innerHTML) return
